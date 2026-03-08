@@ -399,7 +399,13 @@
     </div>
 
     <div class="input-group">
-      <label>Usage — Pinyin</label>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <label style="margin-bottom:0;">Usage — Pinyin</label>
+        <button onclick="regeneratePinyin()" id="regenPinyinBtn" style="background:none;border:none;font-size:11px;color:var(--faded);cursor:pointer;letter-spacing:0.05em;padding:0;font-family:'Noto Sans SC',sans-serif;display:flex;align-items:center;gap:4px;">
+          <span id="regenPinyinSpinner" style="display:none;width:10px;height:10px;border:1.5px solid rgba(140,123,107,0.3);border-top-color:var(--faded);border-radius:50%;animation:spin 0.7s linear infinite;"></span>
+          <span>↺ from hanzi</span>
+        </button>
+      </div>
       <textarea id="fldUsagePinyin" class="f-pinyin" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
     </div>
 
@@ -527,6 +533,45 @@ Rules:
     showError('Error: ' + e.message);
   } finally {
     setLoading(false);
+  }
+}
+
+async function regeneratePinyin() {
+  const usageHanzi = document.getElementById('fldUsageHanzi').value.trim();
+  if (!usageHanzi) return;
+
+  const apiKey = getApiKey();
+  if (!apiKey) { showError('Please enter your Gemini API key above.'); return; }
+
+  const btn = document.getElementById('regenPinyinBtn');
+  const spinner = document.getElementById('regenPinyinSpinner');
+  btn.disabled = true;
+  spinner.style.display = 'inline-block';
+
+  const prompt = `Convert this Chinese sentence to pinyin with tone marks. Return ONLY the pinyin, nothing else:
+"${usageHanzi}"`;
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 200 }
+        })
+      }
+    );
+    if (!response.ok) { const e = await response.json(); throw new Error(e.error?.message || 'API error'); }
+    const data = await response.json();
+    const pinyin = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    document.getElementById('fldUsagePinyin').value = pinyin;
+  } catch (e) {
+    showError('Error: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    spinner.style.display = 'none';
   }
 }
 
