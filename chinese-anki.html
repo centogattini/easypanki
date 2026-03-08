@@ -34,18 +34,15 @@
     overflow-x: hidden;
   }
 
-  /* Subtle paper texture */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: 
-      repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(180,160,120,0.07) 28px, rgba(180,160,120,0.07) 29px);
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(180,160,120,0.07) 28px, rgba(180,160,120,0.07) 29px);
     pointer-events: none;
     z-index: 0;
   }
 
-  /* Vertical red stripe — like a Chinese notebook */
   body::after {
     content: '';
     position: fixed;
@@ -83,19 +80,70 @@
     margin-top: 2px;
   }
 
+  .api-notice {
+    position: relative;
+    z-index: 1;
+    margin: 16px 20px 0 72px;
+    padding: 10px 14px;
+    background: var(--paper-dark);
+    border-left: 2px solid var(--gold);
+    font-size: 12px;
+    color: var(--faded);
+    line-height: 1.6;
+  }
+
+  .api-notice a { color: var(--gold); text-decoration: none; border-bottom: 1px solid var(--gold); }
+
+  .api-key-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .api-key-row input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: 6px 0;
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--ink);
+    outline: none;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  .api-key-row input:focus { border-bottom-color: var(--gold); }
+
+  .btn-save-key {
+    padding: 5px 10px;
+    background: var(--gold);
+    color: white;
+    border: none;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    font-family: 'Noto Sans SC', sans-serif;
+    white-space: nowrap;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  .key-saved { font-size: 11px; color: var(--gold); margin-top: 4px; display: none; }
+  .key-saved.visible { display: block; }
+
   main {
     flex: 1;
     position: relative;
     z-index: 1;
-    padding: 24px 20px 100px 72px;
+    padding: 24px 20px 130px 72px;
     display: flex;
     flex-direction: column;
-    gap: 0;
   }
 
-  .input-group {
-    margin-bottom: 20px;
-  }
+  .input-group { margin-bottom: 20px; }
 
   label {
     display: block;
@@ -107,7 +155,7 @@
     margin-bottom: 6px;
   }
 
-  input, textarea {
+  input[type=text], textarea {
     width: 100%;
     background: transparent;
     border: none;
@@ -122,34 +170,125 @@
     border-radius: 0;
   }
 
-  input:focus, textarea:focus {
-    border-bottom-color: var(--red);
+  input[type=text]:focus, textarea:focus { border-bottom-color: var(--red); }
+  input[type=text]::placeholder, textarea::placeholder { color: var(--border); }
+
+  textarea { resize: none; height: 52px; line-height: 1.6; }
+
+  .hanzi-input input[type=text] {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 26px;
   }
 
-  input::placeholder, textarea::placeholder {
-    color: var(--border);
+  .f-hanzi { font-family: 'Noto Serif SC', serif !important; font-size: 18px !important; }
+  .f-pinyin { font-style: italic; color: #5a4a3a !important; }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
   }
 
-  textarea {
-    resize: none;
-    height: 44px;
+  .btn-generate {
+    flex: 1;
+    padding: 14px 16px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  .btn-generate:active { background: #3a2a1a; }
+  .btn-generate:disabled { background: var(--faded); cursor: not-allowed; }
+
+  .btn-regenerate {
+    padding: 14px 14px;
+    background: transparent;
+    color: var(--faded);
+    border: 1px solid var(--border);
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s;
+    -webkit-appearance: none;
+    border-radius: 0;
+    white-space: nowrap;
+  }
+
+  .btn-regenerate.visible { display: flex; }
+  .btn-regenerate:active { background: var(--paper-dark); }
+  .btn-regenerate:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .spinner {
+    width: 13px; height: 13px;
+    border: 1.5px solid rgba(245,240,232,0.3);
+    border-top-color: var(--paper);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+
+  .btn-generate.loading .spinner { display: block; }
+  .btn-generate.loading .btn-text { opacity: 0.6; }
+
+  .spinner-dark {
+    width: 12px; height: 12px;
+    border: 1.5px solid rgba(140,123,107,0.3);
+    border-top-color: var(--faded);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+
+  .btn-regenerate.loading .spinner-dark { display: block; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: var(--red-light);
+    border-left: 3px solid var(--red);
+    font-size: 13px;
+    color: var(--red);
+    display: none;
     line-height: 1.5;
   }
+  .error.visible { display: block; }
 
-  .hanzi-field input {
-    font-family: 'Noto Serif SC', serif;
-    font-size: 22px;
+  .fields {
+    margin-top: 28px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
   }
 
-  .pinyin-field input {
-    font-style: italic;
-    color: #5a4a3a;
+  .fields.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
   }
 
   .divider {
     height: 1px;
     background: var(--border);
-    margin: 8px 0 24px 0;
+    margin: 4px 0 24px 0;
     position: relative;
   }
 
@@ -165,62 +304,6 @@
     padding-right: 8px;
   }
 
-  /* Generate button */
-  .btn-generate {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    margin-top: 4px;
-    padding: 14px 20px;
-    background: var(--ink);
-    color: var(--paper);
-    border: none;
-    font-family: 'Noto Sans SC', sans-serif;
-    font-size: 13px;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: background 0.2s;
-    -webkit-appearance: none;
-    border-radius: 0;
-  }
-
-  .btn-generate:active { background: #3a2a1a; }
-  .btn-generate:disabled { background: var(--faded); cursor: not-allowed; }
-
-  .btn-generate .spinner {
-    width: 14px; height: 14px;
-    border: 1.5px solid rgba(245,240,232,0.3);
-    border-top-color: var(--paper);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    display: none;
-  }
-
-  .btn-generate.loading .spinner { display: block; }
-  .btn-generate.loading .btn-text { opacity: 0.6; }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Fields area */
-  .fields {
-    margin-top: 28px;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    pointer-events: none;
-  }
-
-  .fields.visible {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: all;
-  }
-
-  /* Add to Anki button */
   .btn-anki {
     position: fixed;
     bottom: 0; left: 0; right: 0;
@@ -247,54 +330,8 @@
 
   .btn-anki.visible { display: flex; }
   .btn-anki:active { background: #962d22; }
+  .btn-anki .anki-icon { font-family: 'Noto Serif SC', serif; font-size: 18px; font-weight: 700; }
 
-  .btn-anki .anki-icon {
-    font-family: 'Noto Serif SC', serif;
-    font-size: 18px;
-    font-weight: 700;
-  }
-
-  /* Error */
-  .error {
-    margin-top: 12px;
-    padding: 10px 14px;
-    background: var(--red-light);
-    border-left: 3px solid var(--red);
-    font-size: 13px;
-    color: var(--red);
-    display: none;
-  }
-  .error.visible { display: block; }
-
-  /* API key notice */
-  .api-notice {
-    position: relative;
-    z-index: 1;
-    margin: 0 20px 0 72px;
-    padding: 10px 14px;
-    background: var(--paper-dark);
-    border-left: 2px solid var(--gold);
-    font-size: 12px;
-    color: var(--faded);
-    line-height: 1.5;
-  }
-
-  .api-notice a {
-    color: var(--gold);
-    text-decoration: none;
-    border-bottom: 1px solid var(--gold);
-  }
-
-  .api-key-input {
-    margin-top: 8px;
-  }
-
-  .api-key-input input {
-    font-size: 13px;
-    font-family: monospace;
-  }
-
-  /* Success flash */
   .success-flash {
     position: fixed;
     inset: 0;
@@ -314,46 +351,58 @@
   <div class="char">汉字</div>
 </header>
 
-<div class="api-notice" id="apiNotice">
-  Paste your <a href="https://console.anthropic.com/settings/keys" target="_blank">Anthropic API key</a> to enable AI generation.
-  <div class="api-key-input">
-    <input type="password" id="apiKeyInput" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+<div class="api-notice">
+  Free API key at <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a> — no credit card needed.
+  <div class="api-key-row">
+    <input type="password" id="apiKeyInput" placeholder="AIza..." autocomplete="off" spellcheck="false">
+    <button class="btn-save-key" onclick="saveKey()">Save</button>
   </div>
+  <div class="key-saved" id="keySaved">✓ Key saved</div>
 </div>
 
 <main>
-  <div class="input-group">
-    <label>English word</label>
-    <input type="text" id="englishInput" placeholder="e.g. perseverance" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+  <div class="input-group hanzi-input">
+    <label>Hanzi</label>
+    <input type="text" id="hanziInput" placeholder="e.g. 坚持" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
   </div>
 
-  <button class="btn-generate" id="generateBtn" onclick="generate()">
-    <div class="spinner"></div>
-    <span class="btn-text">Generate card</span>
-  </button>
+  <div class="btn-row">
+    <button class="btn-generate" id="generateBtn" onclick="generate()">
+      <div class="spinner"></div>
+      <span class="btn-text">Generate card</span>
+    </button>
+    <button class="btn-regenerate" id="regenerateBtn" onclick="generate()">
+      <div class="spinner-dark"></div>
+      <span>↺ Regenerate</span>
+    </button>
+  </div>
 
   <div class="error" id="errorBox"></div>
 
   <div class="fields" id="fieldsArea">
-    <div class="input-group hanzi-field">
-      <label>Hanzi</label>
-      <input type="text" id="fldHanzi" autocomplete="off" autocorrect="off" spellcheck="false">
+
+    <div class="input-group">
+      <label>English</label>
+      <input type="text" id="fldEnglish" autocomplete="off" autocorrect="off" spellcheck="false">
     </div>
-    <div class="input-group pinyin-field">
+
+    <div class="input-group">
       <label>Pinyin</label>
-      <input type="text" id="fldPinyin" autocomplete="off" autocorrect="off" spellcheck="false">
+      <input type="text" id="fldPinyin" class="f-pinyin" autocomplete="off" autocorrect="off" spellcheck="false">
     </div>
 
     <div class="divider"></div>
 
-    <div class="input-group hanzi-field">
+    <div class="input-group">
       <label>Usage — Hanzi</label>
-      <textarea id="fldUsageHanzi" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
+      <textarea id="fldUsageHanzi" class="f-hanzi" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
     </div>
-    <div class="input-group pinyin-field">
+
+    <div class="input-group">
       <label>Usage — Pinyin</label>
-      <textarea id="fldUsagePinyin" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
+      <textarea id="fldUsagePinyin" class="f-pinyin" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
     </div>
+
   </div>
 </main>
 
@@ -365,26 +414,30 @@
 <div class="success-flash" id="successFlash"></div>
 
 <script>
-const PROFILE = 'User 1';
-const DECK = 'ChineseVocab';
+const PROFILE   = 'User 1';
+const DECK      = 'ChineseVocab';
 const NOTE_TYPE = 'Chinese';
 
-function getApiKey() {
-  return document.getElementById('apiKeyInput').value.trim() ||
-         localStorage.getItem('anthropic_key') || '';
-}
-
-document.getElementById('apiKeyInput').addEventListener('change', function() {
-  if (this.value.trim()) localStorage.setItem('anthropic_key', this.value.trim());
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('gemini_key');
+  if (saved) {
+    document.getElementById('apiKeyInput').value = saved;
+    document.getElementById('keySaved').classList.add('visible');
+  }
 });
 
-// Pre-fill saved key
-const savedKey = localStorage.getItem('anthropic_key');
-if (savedKey) {
-  document.getElementById('apiKeyInput').value = savedKey;
+function saveKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) return;
+  localStorage.setItem('gemini_key', key);
+  document.getElementById('keySaved').classList.add('visible');
 }
 
-document.getElementById('englishInput').addEventListener('keydown', function(e) {
+function getApiKey() {
+  return document.getElementById('apiKeyInput').value.trim() || localStorage.getItem('gemini_key') || '';
+}
+
+document.getElementById('hanziInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') generate();
 });
 
@@ -398,55 +451,58 @@ function hideError() {
   document.getElementById('errorBox').classList.remove('visible');
 }
 
+function setLoading(on) {
+  const btn   = document.getElementById('generateBtn');
+  const regen = document.getElementById('regenerateBtn');
+  btn.classList.toggle('loading', on);
+  btn.disabled = on;
+  regen.classList.toggle('loading', on);
+  regen.disabled = on;
+}
+
 async function generate() {
-  const english = document.getElementById('englishInput').value.trim();
-  if (!english) return;
+  const hanzi = document.getElementById('hanziInput').value.trim();
+  if (!hanzi) return;
 
   const apiKey = getApiKey();
   if (!apiKey) {
-    showError('Please enter your Anthropic API key above.');
+    showError('Please enter your Gemini API key above and tap Save.');
     return;
   }
 
   hideError();
-  const btn = document.getElementById('generateBtn');
-  btn.classList.add('loading');
-  btn.disabled = true;
-
+  setLoading(true);
   document.getElementById('fieldsArea').classList.remove('visible');
   document.getElementById('ankiBtn').classList.remove('visible');
 
-  try {
-    const prompt = `Generate a Chinese flashcard for the English word: "${english}"
+  const prompt = `You are a Chinese language expert. Generate a flashcard for the Chinese word/phrase: "${hanzi}"
 
-Return ONLY a JSON object with exactly these keys:
+Return ONLY a valid JSON object with exactly these keys:
 {
-  "hanzi": "the Chinese word/phrase in characters",
-  "pinyin": "pinyin with tone marks",
-  "usage_hanzi": "one natural example sentence in Chinese characters",
-  "usage_pinyin": "the same example sentence in pinyin with tone marks"
+  "english": "the best English translation",
+  "pinyin": "pinyin with tone marks (e.g. nǐ hǎo)",
+  "usage_hanzi": "one short natural example sentence in Chinese characters",
+  "usage_pinyin": "the same sentence in pinyin with tone marks"
 }
 
 Rules:
-- Choose the most common/natural Chinese translation
-- Use standard Mandarin
-- Example sentence should be simple, natural, and illustrate the word's meaning
-- Return ONLY the JSON, no other text`;
+- english: concise, most common translation
+- pinyin: use proper tone diacritics (ā á ǎ à, ē é ě è, etc.)
+- usage sentence: short (under 12 words), natural, illustrates the meaning
+- Return ONLY the JSON object, no markdown, no explanation`;
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.3, maxOutputTokens: 512 }
+        })
+      }
+    );
 
     if (!response.ok) {
       const err = await response.json();
@@ -454,38 +510,36 @@ Rules:
     }
 
     const data = await response.json();
-    const text = data.content[0].text.trim();
-    const clean = text.replace(/```json|```/g, '').trim();
-    const card = JSON.parse(clean);
+    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    text = text.replace(/```json|```/g, '').trim();
+    const card = JSON.parse(text);
 
-    document.getElementById('fldHanzi').value = card.hanzi || '';
-    document.getElementById('fldPinyin').value = card.pinyin || '';
-    document.getElementById('fldUsageHanzi').value = card.usage_hanzi || '';
-    document.getElementById('fldUsagePinyin').value = card.usage_pinyin || '';
+    document.getElementById('fldEnglish').value    = card.english      || '';
+    document.getElementById('fldPinyin').value     = card.pinyin       || '';
+    document.getElementById('fldUsageHanzi').value = card.usage_hanzi  || '';
+    document.getElementById('fldUsagePinyin').value= card.usage_pinyin || '';
 
     document.getElementById('fieldsArea').classList.add('visible');
     document.getElementById('ankiBtn').classList.add('visible');
+    document.getElementById('regenerateBtn').classList.add('visible');
 
   } catch (e) {
     showError('Error: ' + e.message);
   } finally {
-    btn.classList.remove('loading');
-    btn.disabled = false;
+    setLoading(false);
   }
 }
 
 function sendToAnki() {
-  const english = document.getElementById('englishInput').value.trim();
-  const hanzi = document.getElementById('fldHanzi').value.trim();
-  const pinyin = document.getElementById('fldPinyin').value.trim();
-  const usageHanzi = document.getElementById('fldUsageHanzi').value.trim();
-  const usagePinyin = document.getElementById('fldUsagePinyin').value.trim();
+  const hanzi   = document.getElementById('hanziInput').value.trim();
+  const english = document.getElementById('fldEnglish').value.trim();
+  const pinyin  = document.getElementById('fldPinyin').value.trim();
+  const usageH  = document.getElementById('fldUsageHanzi').value.trim();
+  const usageP  = document.getElementById('fldUsagePinyin').value.trim();
 
   const enc = encodeURIComponent;
+  const url = `anki://x-callback-url/addnote?profile=${enc(PROFILE)}&type=${enc(NOTE_TYPE)}&deck=${enc(DECK)}&fldenglish=${enc(english)}&fldhanzi=${enc(hanzi)}&fldpinyin=${enc(pinyin)}&fldusage%20hanzi=${enc(usageH)}&fldusage%20pinyin=${enc(usageP)}`;
 
-  const url = `anki://x-callback-url/addnote?profile=${enc(PROFILE)}&type=${enc(NOTE_TYPE)}&deck=${enc(DECK)}&fldenglish=${enc(english)}&fldhanzi=${enc(hanzi)}&fldpinyin=${enc(pinyin)}&fldusage%20hanzi=${enc(usageHanzi)}&fldusage%20pinyin=${enc(usagePinyin)}`;
-
-  // Flash feedback
   const flash = document.getElementById('successFlash');
   flash.classList.add('show');
   setTimeout(() => flash.classList.remove('show'), 300);
