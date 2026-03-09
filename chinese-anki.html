@@ -494,7 +494,7 @@ Rules: pinyin must use tone marks (ā á ǎ à). Example sentence: short, natura
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 200 }
+          generationConfig: { temperature: 0.9, maxOutputTokens: 200 }
         })
       }
     );
