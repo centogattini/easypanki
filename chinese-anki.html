@@ -484,7 +484,7 @@ async function generate() {
   const prompt = `Chinese flashcard for: "${hanzi}"
 Reply with ONLY this JSON, no markdown:
 {"english":"translation","pinyin":"pīnyīn tones","usage_hanzi":"example sentence","usage_pinyin":"example in pinyin"}
-Rules: pinyin must use tone marks (ā á ǎ à). Example sentence: short, natural, under 10 words. All words except "${hanzi}" must be HSK1-2 level (e.g. 我你他去吃好今天朋友). JSON only, nothing else.`;
+Rules: pinyin must use tone marks (ā á ǎ à). Example sentence: short, natural, under 10 words. All words except "${hanzi}" must be HSK1-2 level, but make them original. JSON only, nothing else.`;
 
   try {
     const response = await fetch(
